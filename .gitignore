@@ -1,0 +1,24 @@
+# --- Entorno virtual (carpeta "conciliacion" dentro del proyecto) ---
+/conciliacion/
+venv/
+env/
+.venv/
+
+# --- Archivos generados por el notebook ---
+Reporte_Conciliacion_Automatizada.xlsx
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# --- Editores / sistema operativo ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Variables de entorno / secretos (por si acaso) ---
+.env
+*.env
