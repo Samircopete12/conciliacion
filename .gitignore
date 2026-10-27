@@ -6,6 +6,7 @@ env/
 
 # --- Archivos generados por el notebook ---
 Reporte_Conciliacion_Automatizada.xlsx
+datos_prueba/Reporte_*.xlsx
 
 # --- Python ---
 __pycache__/

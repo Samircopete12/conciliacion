@@ -1,23 +1,48 @@
 # Conciliación Bancaria Automatizada con Python y Pandas
 
-Notebook que automatiza la **conciliación bancaria**: cruza el libro auxiliar de la empresa con el extracto bancario, clasifica cada transacción y genera un reporte en Excel listo para revisión manual.
+Automatiza la **conciliación bancaria**: cruza el libro auxiliar de la empresa con el extracto bancario, clasifica cada transacción y genera un reporte en Excel listo para revisión manual. El proyecto incluye un **notebook** (`concilicacion.ipynb`) y un **script** (`conciliacion.py`) con la misma lógica.
 
 ## Características
 
-- 📥 Lee `Datos_Prueba.xlsx` (hojas `Libro_Auxiliar` y `Extracto_Bancario`).
+- 📥 Lee las hojas `Libro_Auxiliar` y `Extracto_Bancario` de un archivo Excel.
 - 🔁 Marca los **duplicados en cada hoja por separado** (antes del merge) y clasifica su origen.
 - 🔍 Detecta **referencias sospechosas**: pares que casi coinciden pero difieren por espacios, mayúsculas o guiones (normalización con `strip`/`upper`).
 - ⚖️ Clasifica cada transacción en `Estado_Final`: `Conciliado`, `Diferencia de Montos`, `Partida en Tránsito`, `Nota no Registrada` o `Revisión Manual`.
 - 📤 Exporta un reporte Excel con **4 hojas**: detalle, resumen ejecutivo, referencias sospechosas y partidas sin contrapartida.
 
+## Formas de ejecutarlo
+
+### Script (recomendado)
+
+```bash
+python conciliacion.py
+```
+
+Pide el nombre de un archivo ubicado en `datos_prueba/` (Enter usa `Datos_Prueba_01.xlsx`) y genera el reporte `datos_prueba/Reporte_<nombre>.xlsx`:
+
+```
+Archivos disponibles en datos_prueba/:
+  - Control_01.xlsx
+  - Datos_Prueba_01.xlsx
+Nombre del archivo a procesar (Enter = Datos_Prueba_01.xlsx):
+```
+
+### Notebook
+
+```bash
+jupyter notebook concilicacion.ipynb
+```
+
+Dentro del notebook: **Kernel → Restart & Run All**. Genera `Reporte_Conciliacion_Automatizada.xlsx` en la raíz.
+
 ## Flujo del proceso
 
 ```
-Datos_Prueba.xlsx
+Archivo de datos (Libro_Auxiliar + Extracto_Bancario)
    │
    ├─ 1) Lee ambas hojas y marca duplicados por hoja (Duplicado_Libro / Duplicado_Banco)
    │
-   ├─ 2) Detecta referencias sospechosas (normalización strip/upper)
+   ├─ 2) Detecta referencias sospechosas y sin contrapartida (normalización)
    │
    ├─ 3) Merge outer por Referencia
    │
@@ -25,7 +50,7 @@ Datos_Prueba.xlsx
    │      Coinciliado, Partida en Tránsito / Nota no Registrada,
    │      Diferencia de Montos, Estado_Final, Origen_Duplicado
    │
-   ├─ 5) Exporta Reporte_Conciliacion_Automatizada.xlsx (4 hojas)
+   ├─ 5) Exporta el reporte Excel (4 hojas)
    │
    └─ 6) Imprime el resumen en pantalla
 ```
@@ -34,18 +59,22 @@ Datos_Prueba.xlsx
 
 ```
 conciliacion/
-├── concilicacion.ipynb            # Notebook principal
-├── Datos_Prueba.xlsx              # Datos de prueba (2 hojas)
+├── conciliacion.py                # Script principal (misma lógica que el notebook)
+├── concilicacion.ipynb            # Notebook interactivo
+├── Datos_Prueba.xlsx              # Datos de prueba pequeños (pruebas rápidas)
+├── datos_prueba/                  # Carpeta de conjuntos de prueba generados
+│   ├── Datos_Prueba_01.xlsx       # 120+120 filas, 58 errores plantados
+│   ├── Control_01.xlsx            # Tabla de control de los errores plantados
+│   ├── PROMPT_GENERADOR_DATOS.md  # Prompt reutilizable para generar más conjuntos
+│   └── Reporte_*.xlsx             # Reportes generados por el script (gitignored)
 ├── Guia_Estudio_Conciliacion_Bancaria.pdf   # Guía de estudio completa
 ├── README.md
-└── conciliacion/                  # Entorno virtual (venv)
+└── conciliacion/                  # Entorno virtual (gitignored)
 ```
-
-El notebook genera al ejecutarse: `Reporte_Conciliacion_Automatizada.xlsx`.
 
 ## Requisitos
 
-- Python **3.12+** (una celda usa comillas anidadas en f-strings, disponibles desde Python 3.12)
+- Python **3.12+** (el notebook usa comillas anidadas en f-strings, disponibles desde Python 3.12)
 - [pandas](https://pandas.pydata.org/) (DataFrames, lectura de Excel, merge)
 - [numpy](https://numpy.org/) (`np.where`, `np.select`, valores `NaN`)
 - [openpyxl](https://openpyxl.readthedocs.io/) (motor de escritura de Excel)
@@ -58,15 +87,7 @@ source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install pandas openpyxl     # numpy se instala automáticamente con pandas
 ```
 
-## Uso
-
-```bash
-jupyter notebook concilicacion.ipynb
-```
-
-Dentro del notebook: **Kernel → Restart & Run All**.
-
-Al terminar se genera `Reporte_Conciliacion_Automatizada.xlsx` con estas hojas:
+## Reporte generado
 
 | Hoja | Contenido |
 |---|---|
@@ -75,35 +96,52 @@ Al terminar se genera `Reporte_Conciliacion_Automatizada.xlsx` con estas hojas:
 | `Referencias_Sospechosas` | Pares con errores de formato (espacios, mayúsculas, guiones) |
 | `Sin_Contrapartida` | Referencias que no existen en el otro lado, con su origen |
 
-## Datos de prueba (`Datos_Prueba.xlsx`)
+## Datos de prueba
 
-- `Libro_Auxiliar` — 25 filas: `Fecha`, `Referencia`, `Concepto`, `Monto`
-- `Extracto_Bancario` — 30 filas: `Fecha`, `Referencia`, `Descripcion_Banco`, `Monto`
+**Conjunto pequeño** (`Datos_Prueba.xlsx` en la raíz, para pruebas rápidas):
+- `Libro_Auxiliar` — 25 filas y `Extracto_Bancario` — 30 filas
+- Incluye duplicados, errores de formato, diferencias de montos, partidas y notas.
 
-Incluye casos reales de conciliación:
-- Duplicados en el libro (`CHQ-005`, `CHQ-006`) y en el banco (`TRF-102`, `NOM-1002`, `COM-202`)
-- Referencias con errores de formato: `CHQ-007 ` (espacio), `fac-1009` (minúsculas), `TRF103` (sin guion), `CHQ-00A` (formato inválido)
-- Diferencias de montos (`FAC-1003`, `FAC-1006`, `FAC-1008`)
-- Partidas en tránsito y notas no registradas
+**Conjunto grande** (`datos_prueba/Datos_Prueba_01.xlsx`, para pruebas completas):
+- 120 filas por hoja, octubre de 2026, semilla 482916
+- **58 errores plantados** documentados en `Control_01.xlsx`: 10 referencias duplicadas, 8 errores de formato, 8 montos diferentes, 30 unilaterales legítimas y 2 referencias inválidas.
 
-## Resultado actual con los datos de prueba
+Para generar más conjuntos distintos, usa [`datos_prueba/PROMPT_GENERADOR_DATOS.md`](datos_prueba/PROMPT_GENERADOR_DATOS.md) con un agente de código.
+
+## Resultado actual (conjunto grande)
+
+**Entrada:** 120 filas en `Libro_Auxiliar` + 120 filas en `Extracto_Bancario`.  
+**Salida:** 152 filas en `Detalle_Conciliacion` después del merge y la expansión de duplicados.
 
 ```
-18 Conciliadas, 6 en tránsito, 3 diferencias
+96 conciliadas, 24 partidas en tránsito, 24 notas no registradas, 8 diferencias de montos.
 ```
 
 | Estado | Cantidad |
-|---|---|
-| Conciliado | 18 |
-| Nota no Registrada | 11 |
-| Partida en Tránsito | 6 |
-| Diferencia de Montos | 3 |
+|---|---:|
+| Conciliado | 96 |
+| Partida en Tránsito | 24 |
+| Nota no Registrada | 24 |
+| Diferencia de Montos | 8 |
+| **Total de filas del detalle** | **152** |
+
+### Impacto del reporte
+
+- **120 transacciones por hoja** procesadas sin revisión manual fila por fila.
+- **58 errores plantados** en el conjunto de prueba.
+- **8 diferencias de montos** quedan separadas para revisión humana.
+- **24 notas no registradas** y **24 partidas en tránsito** se clasifican por separado.
+- **6 pares de referencias sospechosas** se detectan por normalización.
+- **2 referencias inválidas** no se detectan automáticamente por formato; quedan como limitación documentada.
+- **Tiempo de ejecución:** ~1,4 segundos en este equipo (no se midió el tiempo de una revisión manual equivalente).
+
+**Lectura correcta:** el proyecto no promete “cero diferencias”. Promete **separar las excepciones** para que el revisor no tenga que revisar 240 filas a mano. El revisor se concentra en las 8 diferencias de monto y en las referencias que requieren criterio.
 
 ## Documentación
 
-La explicación completa (conceptos contables, librerías, funciones utilizadas y su porqué, errores comunes y buenas prácticas) está en **[Guia_Estudio_Conciliacion_Bancaria.pdf](Guia_Estudio_Conciliacion_Bancaria.pdf)**.
+La explicación completa (conceptos contables, librerías, funciones utilizadas y su porqué, flujo del notebook y del script, errores comunes y buenas prácticas) está en **[Guia_Estudio_Conciliacion_Bancaria.pdf](Guia_Estudio_Conciliacion_Bancaria.pdf)**.
 
 ## Limitaciones y próximos pasos
 
-- El notebook **detecta y reporta**, pero no corrige los datos automáticamente: la corrección se hace en el Excel de origen y se re-ejecuta.
-- Posibles mejoras: comparar montos con tolerancia de decimales, detectar duplicados "parciales" (misma referencia, distinto monto), agregar gráficos de resumen y exportar también el `df` completo con `duplicados`.
+- El proyecto **detecta y reporta**, pero no corrige los datos automáticamente: la corrección se hace en el Excel de origen y se re-ejecuta.
+- Posibles mejoras: comparar montos con tolerancia de decimales, detectar duplicados "parciales" (misma referencia, distinto monto), normalización que ignore ceros a la izquierda (hoy `CHQ-0929` no se detecta como sospechoso) y agregar gráficos de resumen.
