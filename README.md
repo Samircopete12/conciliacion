@@ -137,6 +137,10 @@ Para generar más conjuntos distintos, usa [`datos_prueba/PROMPT_GENERADOR_DATOS
 
 **Lectura correcta:** el proyecto no promete “cero diferencias”. Promete **separar las excepciones** para que el revisor no tenga que revisar 240 filas a mano. El revisor se concentra en las 8 diferencias de monto y en las referencias que requieren criterio.
 
+![Resumen del reporte de conciliación](docs/capturas/resumen.png)
+
+*Captura generada a partir de `Reporte_Datos_Prueba_01.xlsx` con datos ficticios.*
+
 ## Documentación
 
 La explicación completa (conceptos contables, librerías, funciones utilizadas y su porqué, flujo del notebook y del script, errores comunes y buenas prácticas) está en **[Guia_Estudio_Conciliacion_Bancaria.pdf](Guia_Estudio_Conciliacion_Bancaria.pdf)**.
