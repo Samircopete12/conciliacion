@@ -145,6 +145,8 @@ Para generar más conjuntos distintos, usa [`datos_prueba/PROMPT_GENERADOR_DATOS
 
 La explicación completa (conceptos contables, librerías, funciones utilizadas y su porqué, flujo del notebook y del script, errores comunes y buenas prácticas) está en **[Guia_Estudio_Conciliacion_Bancaria.pdf](Guia_Estudio_Conciliacion_Bancaria.pdf)**.
 
+Presentación corta: **[Deck de 5 diapositivas (PDF)](docs/decks/Deck_Conciliacion_5_Slides.pdf)** · **[PPTX editable](docs/decks/Deck_Conciliacion_5_Slides.pptx)**.
+
 ## Limitaciones y próximos pasos
 
 - El proyecto **detecta y reporta**, pero no corrige los datos automáticamente: la corrección se hace en el Excel de origen y se re-ejecuta.
